@@ -89,31 +89,7 @@ const TransactionsPage = () => {
       })
     : [];
 
-  const getTransactionDescription = (
-    transaction: TransactionResponse
-  ): string => {
-    // Safety check for transaction properties
-    if (!transaction) return "Unknown transaction";
-
-    const type = getTransactionType(transaction);
-
-    try {
-      if (type === "received") {
-        return `Received from Account ${
-          transaction.fromAccount?.accountNumber || "Unknown"
-        }`;
-      } else if (type === "sent") {
-        return `Sent to Account ${
-          transaction.toAccount?.accountNumber || "Unknown"
-        }`;
-      } else {
-        return "Transfer";
-      }
-    } catch (error) {
-
-      return "Transaction";
-    }
-  };
+  // getTransactionDescription function removed as it's no longer needed
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -314,10 +290,11 @@ const TransactionsPage = () => {
                             <div className="font-medium">
                               {getName(transaction)}
                             </div>
-                            <div className="text-white/60 text-xs mt-1">
-                              {transaction.description ||
-                                getTransactionDescription(transaction)}
-                            </div>
+                            {transaction.description && (
+                              <div className="text-white/60 text-xs mt-1">
+                                {transaction.description}
+                              </div>
+                            )}
                           </td>
                           <td
                             className={`px-6 py-4 whitespace-nowrap text-sm font-medium text-right ${colorClass}`}
