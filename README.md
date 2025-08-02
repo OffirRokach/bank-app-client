@@ -40,5 +40,7 @@ You can try the app immediately with this test user:
 - Email: david.day@example.com
 - Password: SecurePass123!
 
+Access Token duration is 15 minutes.
+
 
 

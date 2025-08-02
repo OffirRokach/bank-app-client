@@ -53,7 +53,6 @@ export const useAccountStore = create<AccountState>((set, get) => ({
       }
     } catch (err) {
       set({ error: "An unexpected error occurred" });
-
     } finally {
       set({ isLoading: false });
     }
@@ -107,7 +106,7 @@ export const useAccountStore = create<AccountState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const response = await createAccountAPI();
+      const response = await createAccountAPI(true);
 
       if (hasData<AccountResponse>(response) && response.data) {
         const newAccount: AccountResponse = response.data;

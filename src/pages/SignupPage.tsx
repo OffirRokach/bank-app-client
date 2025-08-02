@@ -91,7 +91,8 @@ const SignupPage = () => {
       formData.phoneNumber &&
       !/^\+?[1-9]\d{1,14}$/.test(formData.phoneNumber)
     ) {
-      newErrors.phoneNumber = "Please enter a valid phone number";
+      newErrors.phoneNumber =
+        "Please enter a valid phone number. format: +123456789";
       isValid = false;
     }
 
@@ -316,8 +317,7 @@ const SignupPage = () => {
                             "h-7 w-7 bg-slate-700 p-0 hover:bg-slate-600 text-white",
                           nav_button_previous: "absolute left-1",
                           nav_button_next: "absolute right-1",
-                          table:
-                            "w-full border-collapse space-y-1 text-white",
+                          table: "w-full border-collapse space-y-1 text-white",
                           head_row: "flex",
                           head_cell:
                             "text-white rounded-md w-9 font-normal text-[0.8rem]",
@@ -377,7 +377,10 @@ const SignupPage = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-white/80 mb-1 text-left pl-1">
+                <label
+                  htmlFor="email"
+                  className="block text-white/80 mb-1 text-left pl-1"
+                >
                   Email
                 </label>
                 <div className="flex justify-center">
