@@ -37,7 +37,6 @@ export const useTransactions = (accountId?: string) => {
             typeof response.data === "object" &&
             "transactions" in response.data
           ) {
-            // New structure: data contains a transactions array
             // Safely access the transactions array
             const transactions = response.data.transactions;
             if (Array.isArray(transactions)) {
@@ -52,22 +51,22 @@ export const useTransactions = (accountId?: string) => {
         } else {
           setTransactions([]);
           if (response.message) {
-            handleError(null, { 
+            handleError(null, {
               customMessage: response.message,
-              showToast: false // Don't show toast for initial failures
+              showToast: false, // Don't show toast for initial failures
             });
           }
         }
       } else {
         // Don't show errors during initial page load or while account data is being fetched
         const authToken = localStorage.getItem("authToken");
-        
+
         // Only show errors if we have an auth token but no account ID after the page has fully loaded
         if (authToken && document.readyState === "complete") {
           // We'll silently set empty transactions without showing an error toast
           // This prevents the error toast on page refresh while the account is being loaded
         }
-        
+
         setTransactions([]);
       }
     } catch (err) {
