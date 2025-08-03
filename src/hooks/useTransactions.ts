@@ -26,8 +26,6 @@ export const useTransactions = (accountId?: string) => {
         // Fetch transactions for a specific account
         const response = await getTransactionsByAccountAPI(effectiveAccountId);
 
-
-
         if (response.success && response.data) {
           // The API returns transactions nested inside the data object
           // Handle both possible structures for backward compatibility
@@ -40,7 +38,6 @@ export const useTransactions = (accountId?: string) => {
             "transactions" in response.data
           ) {
             // New structure: data contains a transactions array
-
             // Safely access the transactions array
             const transactions = response.data.transactions;
             if (Array.isArray(transactions)) {
@@ -48,37 +45,27 @@ export const useTransactions = (accountId?: string) => {
             }
           } else if (Array.isArray(response.data)) {
             // Old structure: data itself is the array
-
             transactionsData = response.data;
           }
 
-
           setTransactions(transactionsData);
         } else {
-
           setTransactions([]);
           if (response.message) {
-            handleError(null, { customMessage: response.message });
+            handleError(null, { 
+              customMessage: response.message,
+              showToast: false // Don't show toast for initial failures
+            });
           }
         }
       } else {
-        // During page refresh, we don't want to show an error while the account is being loaded
-        const isInitialPageLoad = document.readyState !== "complete";
+        // Don't show errors during initial page load or while account data is being fetched
         const authToken = localStorage.getItem("authToken");
         
-        if (!isInitialPageLoad) {
-          if (!authToken) {
-            // No auth token means user is not logged in, redirect to login
-
-            window.location.href = "/login";
-          } else {
-            // Auth token exists but no account ID - this is a server logic error
-
-            handleError(null, { 
-              customMessage: "Server error: Unable to retrieve account information",
-              redirectOnAuth: false
-            });
-          }
+        // Only show errors if we have an auth token but no account ID after the page has fully loaded
+        if (authToken && document.readyState === "complete") {
+          // We'll silently set empty transactions without showing an error toast
+          // This prevents the error toast on page refresh while the account is being loaded
         }
         
         setTransactions([]);

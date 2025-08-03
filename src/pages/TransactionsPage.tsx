@@ -13,8 +13,13 @@ const TransactionsPage = () => {
   useEffect(() => {
     const loadAccountData = async () => {
       if (!currentAccount) {
-        // Try to load the default account
-        await getDefaultAccount();
+        try {
+          // Try to load the default account silently without showing error toasts
+          await getDefaultAccount();
+        } catch (error) {
+          // Silently handle any errors during initial account loading
+          console.error("Error loading account data:", error);
+        }
       }
     };
     
@@ -26,6 +31,7 @@ const TransactionsPage = () => {
   
   // Fetch transactions when account changes
   useEffect(() => {
+    // Only fetch transactions if we have a valid account ID
     if (currentAccount?.id) {
       fetchTransactions();
     }

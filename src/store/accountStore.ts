@@ -62,7 +62,7 @@ export const useAccountStore = create<AccountState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      // Use suppressToast to prevent error toast during logout
+      // Always use suppressToast to prevent error toast during page load/refresh
       const response = await getAccountsAPI(true);
 
       if (
@@ -79,19 +79,22 @@ export const useAccountStore = create<AccountState>((set, get) => ({
           set({
             accounts: response.data,
             currentAccount: defaultAccount,
+            error: null, // Clear any previous errors
           });
           return defaultAccount;
         } else {
+          // Set error but don't display toast
           set({ error: "No default account found" });
           return null;
         }
       } else {
+        // Set error message but don't display toast
         set({ error: response?.message || "Failed to fetch accounts" });
         return null;
       }
     } catch (err) {
+      // Set error but don't display toast during page load
       set({ error: "An unexpected error occurred" });
-
       return null;
     } finally {
       set({ isLoading: false });
