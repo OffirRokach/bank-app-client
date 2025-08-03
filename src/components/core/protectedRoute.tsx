@@ -3,13 +3,24 @@
  * and redirects to login if not authenticated
  */
 import { Navigate, Outlet } from "react-router-dom";
+import { useEffect } from "react";
 import { isTokenValid } from "../../helpers/tokenValidator";
 
 const ProtectedRoute = () => {
   const token = localStorage.getItem("authToken");
   const isAuthenticated = isTokenValid(token);
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+  useEffect(() => {
+    if (!isAuthenticated) {
+      localStorage.removeItem("authToken");
+    }
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
