@@ -137,7 +137,6 @@ const ProfilePage = () => {
         toast.success(result.message || "Profile updated successfully");
       }
     } catch (error: any) {
-
       // Show error message from API if available
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
@@ -353,13 +352,15 @@ const ProfilePage = () => {
                         field="phoneNumber"
                         isEditing={editableFields.phoneNumber}
                       />
-                      
+
                       {/* Birth Date (read-only) */}
                       <div className="flex justify-between items-center py-2">
                         <div>
                           <p className="text-white/80 text-sm">Birth Date</p>
                           <p className="text-white text-lg">
-                            {profile?.birthDate ? new Date(profile.birthDate).toLocaleDateString() : 'Not provided'}
+                            {profile?.birthDate
+                              ? new Date(profile.birthDate).toLocaleDateString()
+                              : "Not provided"}
                           </p>
                         </div>
                       </div>

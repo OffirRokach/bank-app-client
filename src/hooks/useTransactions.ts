@@ -20,7 +20,7 @@ export const useTransactions = (accountId?: string) => {
 
     try {
       // Try to get accountId from props or from the store
-      let effectiveAccountId = accountId || currentAccount?.id;
+      const effectiveAccountId = accountId || currentAccount?.id;
 
       if (effectiveAccountId) {
         // Fetch transactions for a specific account

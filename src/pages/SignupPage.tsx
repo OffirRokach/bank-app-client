@@ -74,15 +74,15 @@ const SignupPage = () => {
       isValid = false;
     }
 
-    // Password validation (at least 8 chars, 1 lowercase, 1 uppercase, 1 number, 1 special char)
+    // Password validation (at least 8 chars, 1 lowercase, 1 uppercase, 1 number, 1 special char, no whitespace)
     if (
       formData.password &&
-      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/.test(
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])[^\s]{8,}$/.test(
         formData.password
       )
     ) {
       newErrors.password =
-        "Password must be at least 8 characters and include lowercase, uppercase, number and special character";
+        "Password must be at least 8 characters and include lowercase, uppercase, number and special character and no whitespace";
       isValid = false;
     }
 

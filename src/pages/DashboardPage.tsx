@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import type { AccountResponse } from "../types";
 import { toast } from "react-toastify";
 import { useAccountStore } from "../store/accountStore";
+import { useSocket } from "../hooks/useSocket";
 
 const DashboardPage = () => {
   const { firstName, logout } = useAuth();
   const navigate = useNavigate();
+  const { connect, disconnect, connected } = useSocket();
 
   const {
     accounts,
@@ -26,10 +28,19 @@ const DashboardPage = () => {
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
+    // Connect to socket server on component mount
+    connect();
+
+    // Return cleanup function to disconnect when component unmounts
+    return () => {
+      disconnect();
+    };
+  }, [connect, disconnect]);
+
+  useEffect(() => {
     // On component mount, fetch accounts and set default account
     const initializeAccounts = async () => {
       setIsInitializing(true);
-
 
       try {
         // First fetch all accounts
@@ -38,16 +49,12 @@ const DashboardPage = () => {
         // Get accounts after fetching to ensure we have the latest state
         const currentAccounts = useAccountStore.getState().accounts;
 
-
         // If no current account is set, get the default account
         if (!currentAccount) {
-
           const defaultAcc = await getDefaultAccount();
-
 
           // If still no current account and we have accounts, use the first one
           if (!defaultAcc && currentAccounts.length > 0) {
-
             setCurrentAccount(currentAccounts[0]);
           }
         }
@@ -119,6 +126,11 @@ const DashboardPage = () => {
         {/* Welcome Title */}
         <h1 className="text-white text-2xl font-bold mb-6">
           {firstName ? `Welcome, ${firstName}` : "Welcome"}
+          {connected && (
+            <span className="ml-2 text-sm text-green-400 font-normal">
+              (Connected)
+            </span>
+          )}
         </h1>
 
         {isInitializing ? (
