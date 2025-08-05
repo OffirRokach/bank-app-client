@@ -3,12 +3,13 @@ import { useTransactions } from "../hooks/useTransactions";
 import { useState, useEffect } from "react";
 import type { TransactionResponse } from "../types";
 import { useAccountStore } from "../store/accountStore";
+import { ConnectionStatus } from "../components/ConnectionStatus";
 
 const TransactionsPage = () => {
   const navigate = useNavigate();
   // Get account from the store
   const { currentAccount, getDefaultAccount } = useAccountStore();
-  
+
   // Handle page refresh - ensure we have account data
   useEffect(() => {
     const loadAccountData = async () => {
@@ -22,13 +23,13 @@ const TransactionsPage = () => {
         }
       }
     };
-    
+
     loadAccountData();
   }, [currentAccount, getDefaultAccount]);
-  
+
   // Get transactions using the account from the store
   const { transactions, isLoading, fetchTransactions } = useTransactions();
-  
+
   // Fetch transactions when account changes
   useEffect(() => {
     // Only fetch transactions if we have a valid account ID
@@ -53,7 +54,6 @@ const TransactionsPage = () => {
       !transaction.fromAccountId ||
       !transaction.toAccountId
     ) {
-
       return "unknown";
     }
 
@@ -75,19 +75,16 @@ const TransactionsPage = () => {
   const filteredTransactions = transactions
     ? transactions.filter((transaction) => {
         if (transactionFilter === "all") {
-
           return true;
         }
 
         const type = getTransactionType(transaction);
 
         if (transactionFilter === "received" && type === "received") {
-
           return true;
         }
 
         if (transactionFilter === "sent" && type === "sent") {
-
           return true;
         }
 
@@ -134,15 +131,14 @@ const TransactionsPage = () => {
         return "Transfer";
       }
     } catch (error) {
-
       return "Unknown";
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-900 via-purple-800 to-indigo-900 flex flex-col">
-      {/* Header with back button */}
-      <div className="p-4">
+      {/* Header with back button and connection status */}
+      <div className="p-4 flex justify-between items-center">
         <Link
           to="/dashboard"
           className="text-white/80 hover:text-white flex items-center gap-2 w-fit"
@@ -161,6 +157,9 @@ const TransactionsPage = () => {
           </svg>
           Back to Dashboard
         </Link>
+        
+        {/* Connection Status */}
+        <ConnectionStatus />
       </div>
 
       {/* Main Content */}
@@ -195,7 +194,6 @@ const TransactionsPage = () => {
                 <button
                   type="button"
                   onClick={() => {
-
                     setTransactionFilter("all");
                   }}
                   className={`px-3 py-1 rounded-md text-sm ${
@@ -209,7 +207,6 @@ const TransactionsPage = () => {
                 <button
                   type="button"
                   onClick={() => {
-
                     setTransactionFilter("received");
                   }}
                   className={`px-3 py-1 rounded-md text-sm ${
@@ -223,7 +220,6 @@ const TransactionsPage = () => {
                 <button
                   type="button"
                   onClick={() => {
-
                     setTransactionFilter("sent");
                   }}
                   className={`px-3 py-1 rounded-md text-sm ${

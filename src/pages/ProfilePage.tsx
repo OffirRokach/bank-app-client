@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useState, useEffect, useRef } from "react";
 import type { UserUpdatableFields } from "../types";
 import { Input } from "../components/ui/inputBox";
+import { ConnectionStatus } from "../components/ConnectionStatus";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -225,6 +226,10 @@ const ProfilePage = () => {
               </div>
             </div>
             <div className="flex items-center">
+              {/* Connection Status */}
+              <div className="mr-4">
+                <ConnectionStatus />
+              </div>
               <button
                 onClick={() => navigate("/dashboard")}
                 className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-md transition-colors mr-2"

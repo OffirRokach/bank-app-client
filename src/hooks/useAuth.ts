@@ -4,6 +4,7 @@ import type { AccessToken, JwtPayload } from "../types";
 import { handleError } from "../helpers/errorHandler";
 import { useNavigate } from "react-router-dom";
 import { useAccountStore } from "../store/accountStore";
+import { connectSocket, disconnectSocket } from "./useSocket";
 
 export const useAuth = () => {
   const navigate = useNavigate();
@@ -18,10 +19,8 @@ export const useAuth = () => {
   const firstName = useMemo(() => {
     if (token) {
       try {
-
         return jwtDecode<JwtPayload>(token).firstName;
       } catch (err) {
-
         return null;
       }
     }
@@ -42,10 +41,10 @@ export const useAuth = () => {
     localStorage.setItem("authToken", authToken);
 
     try {
-
+      connectSocket();
       const defaultAccount = await getDefaultAccount();
       if (!defaultAccount) {
-
+        // Handle case when no default account is found
       }
       setCurrentAccount(defaultAccount);
     } catch (error) {
@@ -57,6 +56,7 @@ export const useAuth = () => {
   };
 
   const logout = () => {
+    disconnectSocket();
     setCurrentAccount(null);
     setToken(null);
     localStorage.removeItem("authToken");

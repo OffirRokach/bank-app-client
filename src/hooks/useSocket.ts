@@ -1,75 +1,113 @@
 // useSocket.ts
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { toast } from "react-toastify";
 
 interface ServerToClientEvents {
   "money-transfer": (data: { from: string; amount: number }) => void;
+  "money-sent": (data: { to: string; amount: number }) => void;
 }
 
 type SocketType = Socket<ServerToClientEvents>;
 
+let globalSocket: SocketType | null = null;
+let listeners: Array<(connected: boolean) => void> = [];
+
+const notifyListeners = (connected: boolean) => {
+  listeners.forEach((listener) => listener(connected));
+};
+
+export const connectSocket = (): SocketType | null => {
+  if (globalSocket?.connected) {
+    return globalSocket;
+  }
+
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    console.warn("No auth token found, cannot connect to socket server");
+    return null;
+  }
+
+  const socket: SocketType = io(import.meta.env.VITE_NODEJS_URL, {
+    auth: {
+      token,
+    },
+    autoConnect: true,
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+  });
+
+  globalSocket = socket;
+
+  socket.on("connect", () => {
+    console.log("Socket connected:", socket.id);
+    notifyListeners(true);
+  });
+
+  socket.on("disconnect", (reason) => {
+    console.log("Socket disconnected:", reason);
+    notifyListeners(false);
+  });
+
+  // Handle money transfer events (receiving money)
+  socket.on("money-transfer", (data) => {
+    toast.success(`Received $${data.amount.toFixed(2)} from ${data.from}`, {
+      toastId: "transaction-toast",
+      position: "bottom-right",
+      autoClose: 5000,
+    });
+  });
+
+  // Handle money sent events (sending money)
+  socket.on("money-sent", (data) => {
+    // Show toast for outgoing money
+    toast.info(`Sent $${data.amount.toFixed(2)} to ${data.to}`, {
+      toastId: "transaction-toast",
+      position: "bottom-right",
+      autoClose: 5000,
+    });
+  });
+
+  return socket;
+};
+
+// Global disconnect function
+export const disconnectSocket = () => {
+  if (globalSocket) {
+    globalSocket.disconnect();
+    globalSocket = null;
+    notifyListeners(false);
+  }
+};
+
+// Hook for components to use the global socket
 export function useSocket() {
-  const [connected, setConnected] = useState(false);
-  const socketRef = useRef<SocketType | null>(null);
+  const [connected, setConnected] = useState(() => {
+    return globalSocket?.connected || false;
+  });
 
-  const connect = useCallback(() => {
-    if (socketRef.current?.connected) {
-      return;
-    }
-
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      console.warn("No auth token found, cannot connect to socket server");
-      return;
-    }
-
-    const socket: SocketType = io(import.meta.env.VITE_NODEJS_URL, {
-      auth: {
-        token,
-      },
-      autoConnect: true,
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
-
-    socketRef.current = socket;
-
-    socket.on("connect", () => {
-      setConnected(true);
-      console.log("Socket connected:", socket.id);
-    });
-
-    socket.on("disconnect", (reason) => {
-      setConnected(false);
-      console.log("Socket disconnected:", reason);
-    });
-
-    return socket;
-  }, []);
-
-  // Function to disconnect from socket server
-  const disconnect = useCallback(() => {
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-      socketRef.current = null;
-      setConnected(false);
-    }
-  }, []);
-
-  // Clean up on unmount
   useEffect(() => {
+    // Register this component as a listener for connection state changes
+    const listener = (isConnected: boolean) => {
+      setConnected(isConnected);
+    };
+
+    listeners.push(listener);
+
+    // Set initial state
+    setConnected(globalSocket?.connected || false);
+
+    // Clean up listener on unmount
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
+      listeners = listeners.filter((l) => l !== listener);
     };
   }, []);
 
   return {
-    socket: socketRef.current,
+    socket: globalSocket,
     connected,
-    connect,
-    disconnect,
+    connect: connectSocket,
+    disconnect: disconnectSocket,
   };
 }

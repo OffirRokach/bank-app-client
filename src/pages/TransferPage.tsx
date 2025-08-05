@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { createTransactionAPI } from "../services/TransactionService";
 import { useAuth } from "../hooks/useAuth";
 import { useAccountStore } from "../store/accountStore";
+import { ConnectionStatus } from "../components/ConnectionStatus";
 
 const TransferPage = () => {
   const navigate = useNavigate();
@@ -93,8 +94,8 @@ const TransferPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-900 via-purple-800 to-indigo-900 flex flex-col">
-      {/* Header with back button */}
-      <div className="p-4">
+      {/* Header with back button and connection status */}
+      <div className="p-4 flex justify-between items-center">
         <Link
           to="/dashboard"
           className="text-white/80 hover:text-white flex items-center gap-2 w-fit"
@@ -113,6 +114,9 @@ const TransferPage = () => {
           </svg>
           Back to Dashboard
         </Link>
+        
+        {/* Connection Status */}
+        <ConnectionStatus />
       </div>
 
       {/* Main content */}

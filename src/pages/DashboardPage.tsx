@@ -4,12 +4,11 @@ import { useEffect, useState } from "react";
 import type { AccountResponse } from "../types";
 import { toast } from "react-toastify";
 import { useAccountStore } from "../store/accountStore";
-import { useSocket } from "../hooks/useSocket";
+import { ConnectionStatus } from "../components/ConnectionStatus";
 
 const DashboardPage = () => {
   const { firstName, logout } = useAuth();
   const navigate = useNavigate();
-  const { connect, disconnect, connected } = useSocket();
 
   const {
     accounts,
@@ -26,16 +25,6 @@ const DashboardPage = () => {
     useState(false);
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
-
-  useEffect(() => {
-    // Connect to socket server on component mount
-    connect();
-
-    // Return cleanup function to disconnect when component unmounts
-    return () => {
-      disconnect();
-    };
-  }, [connect, disconnect]);
 
   useEffect(() => {
     // On component mount, fetch accounts and set default account
@@ -104,6 +93,10 @@ const DashboardPage = () => {
               <div className="text-white text-xl font-bold">Aurora</div>
             </div>
             <div className="flex items-center">
+              {/* Connection Status */}
+              <div className="mr-4">
+                <ConnectionStatus />
+              </div>
               <button
                 onClick={() => navigate("/profile")}
                 className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-md transition-colors mr-2"
@@ -126,11 +119,6 @@ const DashboardPage = () => {
         {/* Welcome Title */}
         <h1 className="text-white text-2xl font-bold mb-6">
           {firstName ? `Welcome, ${firstName}` : "Welcome"}
-          {connected && (
-            <span className="ml-2 text-sm text-green-400 font-normal">
-              (Connected)
-            </span>
-          )}
         </h1>
 
         {isInitializing ? (
