@@ -30,6 +30,7 @@ export const useAuth = () => {
   useEffect(() => {
     if (token) {
       localStorage.setItem("authToken", token);
+      connectSocket();
     } else {
       localStorage.removeItem("authToken");
     }
@@ -41,7 +42,6 @@ export const useAuth = () => {
     localStorage.setItem("authToken", authToken);
 
     try {
-      connectSocket();
       const defaultAccount = await getDefaultAccount();
       if (!defaultAccount) {
         // Handle case when no default account is found

@@ -14,7 +14,7 @@ export const ConnectionStatus = ({ className = "" }: ConnectionStatusProps) => {
           connected ? "bg-green-500" : "bg-red-500"
         }`}
       />
-      <span className="text-xs font-medium text-black">
+      <span className="text-xs font-bold text-white">
         {connected ? "Online" : "Offline"}
       </span>
     </div>
