@@ -1,20 +1,12 @@
-import { useSocket } from "../hooks/useSocket";
+import { useSocket, isMobileDevice } from "../hooks/useSocket";
 
 interface ConnectionStatusProps {
   className?: string;
 }
 
-// Helper to check if device is mobile - same as in useSocket.ts
-const isMobileDevice = (): boolean => {
-  if (typeof navigator === 'undefined') return false;
-  const userAgent = navigator.userAgent || navigator.vendor;
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-};
-
 export const ConnectionStatus = ({ className = "" }: ConnectionStatusProps) => {
   const { connected } = useSocket();
-  
-  // Don't render anything on mobile devices - check immediately
+
   if (isMobileDevice()) {
     return null;
   }

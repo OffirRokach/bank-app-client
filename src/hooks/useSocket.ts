@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "react-toastify";
 
-// Helper to check if device is mobile
-const isMobileDevice = (): boolean => {
-  if (typeof navigator === 'undefined') return false;
+// Helper to check if device is mobile - exported for use in other components
+export const isMobileDevice = (): boolean => {
+  if (typeof navigator === "undefined") return false;
   const userAgent = navigator.userAgent || navigator.vendor;
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    userAgent
+  );
 };
 
 interface ServerToClientEvents {
@@ -116,7 +118,7 @@ export function useSocket() {
     if (isMobileDevice()) {
       return;
     }
-    
+
     // Register this component as a listener for connection state changes
     const listener = (isConnected: boolean) => {
       setConnected(isConnected);
