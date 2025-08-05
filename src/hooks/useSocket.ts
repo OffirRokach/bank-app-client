@@ -18,8 +18,17 @@ const notifyListeners = (connected: boolean) => {
 };
 
 export const connectSocket = (): SocketType | null => {
-  if (globalSocket?.connected) {
-    return globalSocket;
+  if (globalSocket) {
+    if (globalSocket.connected) {
+      console.log("Socket already connected, reusing existing connection");
+      return globalSocket;
+    } else {
+      // Socket exists but is disconnected, clean it up
+      console.log("Cleaning up disconnected socket before creating new one");
+      globalSocket.disconnect();
+      globalSocket.removeAllListeners();
+      globalSocket = null;
+    }
   }
 
   const token = localStorage.getItem("authToken");
