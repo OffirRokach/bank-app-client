@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "react-toastify";
 
+// Helper to check if device is mobile
+const isMobileDevice = (): boolean => {
+  if (typeof navigator === 'undefined') return false;
+  const userAgent = navigator.userAgent || navigator.vendor;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+};
+
 interface ServerToClientEvents {
   "money-transfer": (data: { from: string; amount: number }) => void;
   "money-sent": (data: { to: string; amount: number }) => void;
@@ -18,6 +25,12 @@ const notifyListeners = (connected: boolean) => {
 };
 
 export const connectSocket = (): SocketType | null => {
+  // Don't establish socket connections on mobile devices
+  if (isMobileDevice()) {
+    console.log("Mobile device detected, skipping socket connection");
+    return null;
+  }
+
   if (globalSocket) {
     if (globalSocket.connected) {
       console.log("Socket already connected, reusing existing connection");
@@ -93,10 +106,17 @@ export const disconnectSocket = () => {
 // Hook for components to use the global socket
 export function useSocket() {
   const [connected, setConnected] = useState(() => {
+    // Always return false for mobile devices
+    if (isMobileDevice()) return false;
     return globalSocket?.connected || false;
   });
 
   useEffect(() => {
+    // Skip socket connection logic for mobile devices
+    if (isMobileDevice()) {
+      return;
+    }
+    
     // Register this component as a listener for connection state changes
     const listener = (isConnected: boolean) => {
       setConnected(isConnected);
