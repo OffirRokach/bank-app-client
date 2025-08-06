@@ -65,6 +65,9 @@ const LoginPage = () => {
       return;
     }
 
+    // Log the API URL from environment variables
+    console.log('API URL from env:', import.meta.env.VITE_NODEJS_URL);
+
     setIsSubmitting(true);
 
     try {

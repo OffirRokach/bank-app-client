@@ -13,8 +13,12 @@ export const loginAPI = async (
   password: string
 ): Promise<ApiResponse<LoginResponse>> => {
   try {
+    const apiUrl = `${import.meta.env.VITE_NODEJS_URL}${api}/auth/login`;
+    console.log('Login API URL:', apiUrl);
+    console.log('Raw VITE_NODEJS_URL:', import.meta.env.VITE_NODEJS_URL);
+    
     const axiosResponse = await axios.post<ApiResponse<LoginResponse>>(
-      `${import.meta.env.VITE_NODEJS_URL}${api}/auth/login`,
+      apiUrl,
       {
         email: email,
         password: password,
