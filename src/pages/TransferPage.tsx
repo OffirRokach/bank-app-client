@@ -5,7 +5,6 @@ import { createTransactionAPI } from "../services/TransactionService";
 import { useAuth } from "../hooks/useAuth";
 import { useAccountStore } from "../store/accountStore";
 import { ConnectionStatus } from "../components/ConnectionStatus";
-import { isMobileDevice } from "../hooks/useSocket";
 
 const TransferPage = () => {
   const navigate = useNavigate();
@@ -71,10 +70,7 @@ const TransferPage = () => {
       );
 
       if (result.success) {
-        // Only show toast on mobile devices. socket.io will handle desktop notifications
-        if (isMobileDevice()) {
-          toast.success("Transfer completed successfully");
-        }
+        toast.success("Transfer completed successfully");
 
         // Reset form
         setToAccountNumber("");

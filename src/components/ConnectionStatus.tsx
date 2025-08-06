@@ -1,4 +1,4 @@
-import { useSocket, isMobileDevice } from "../hooks/useSocket";
+import { useSocket } from "../hooks/useSocket";
 
 interface ConnectionStatusProps {
   className?: string;
@@ -6,10 +6,6 @@ interface ConnectionStatusProps {
 
 export const ConnectionStatus = ({ className = "" }: ConnectionStatusProps) => {
   const { connected } = useSocket();
-
-  if (isMobileDevice()) {
-    return null;
-  }
 
   return (
     <div className={`flex items-center gap-1.5 ${className}`}>
