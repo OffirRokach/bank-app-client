@@ -30,6 +30,20 @@ interface AccountState {
   getAccountById: (accountId: string) => Promise<AccountResponse | null>;
 }
 
+// Helper function to save current account ID to local storage
+const saveCurrentAccountId = (accountId: string | null) => {
+  if (accountId) {
+    localStorage.setItem('currentAccountId', accountId);
+  } else {
+    localStorage.removeItem('currentAccountId');
+  }
+};
+
+// Helper function to get saved account ID from local storage
+const getSavedAccountId = (): string | null => {
+  return localStorage.getItem('currentAccountId');
+};
+
 export const useAccountStore = create<AccountState>((set, get) => ({
   accounts: [],
   currentAccount: null,
@@ -69,22 +83,33 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         hasData<AccountResponse[]>(response) &&
         Array.isArray(response.data)
       ) {
-        // Find the default account in the list
-        const defaultAccount = response.data.find(
-          (account) => account.isDefault
-        );
+        const accounts = response.data;
+        let selectedAccount = null;
+        
+        // First, check if we have a saved account ID in local storage
+        const savedAccountId = getSavedAccountId();
+        
+        if (savedAccountId) {
+          // Try to find the saved account in the fetched accounts
+          selectedAccount = accounts.find(account => account.id === savedAccountId);
+        }
+        
+        // If no saved account was found, fall back to the default account
+        if (!selectedAccount) {
+          selectedAccount = accounts.find(account => account.isDefault);
+        }
 
-        if (defaultAccount) {
-          // Update the accounts state with the fetched accounts
+        if (selectedAccount) {
+          // Update the accounts state with the fetched accounts and selected account
           set({
-            accounts: response.data,
-            currentAccount: defaultAccount,
+            accounts: accounts,
+            currentAccount: selectedAccount,
             error: null, // Clear any previous errors
           });
-          return defaultAccount;
+          return selectedAccount;
         } else {
           // Set error but don't display toast
-          set({ error: "No default account found" });
+          set({ error: "No account found" });
           return null;
         }
       } else {
@@ -103,6 +128,8 @@ export const useAccountStore = create<AccountState>((set, get) => ({
 
   setCurrentAccount: (account) => {
     set({ currentAccount: account });
+    // Save account ID to local storage when setting current account
+    saveCurrentAccountId(account?.id || null);
   },
 
   createAccount: async () => {

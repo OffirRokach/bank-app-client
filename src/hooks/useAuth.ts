@@ -60,6 +60,7 @@ export const useAuth = () => {
     setCurrentAccount(null);
     setToken(null);
     localStorage.removeItem("authToken");
+    localStorage.removeItem("currentAccountId"); // Also clear the saved account ID
     navigate("/login");
   };
 
