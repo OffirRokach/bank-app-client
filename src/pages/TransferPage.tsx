@@ -18,7 +18,8 @@ const TransferPage = () => {
   // Protected route handles authentication check
 
   const { logout } = useAuth();
-  const { currentAccount, getAccountById, getDefaultAccount } = useAccountStore();
+  const { currentAccount, getAccountById, getDefaultAccount } =
+    useAccountStore();
 
   // Handle page refresh - ensure we have account data
   useEffect(() => {
@@ -32,7 +33,7 @@ const TransferPage = () => {
         }
       }
     };
-    
+
     loadAccountData();
   }, [currentAccount, getDefaultAccount, navigate]);
 
@@ -69,10 +70,8 @@ const TransferPage = () => {
         description
       );
 
-
-
       if (result.success) {
-        // Only show toast on mobile devices since socket.io will handle desktop notifications
+        // Only show toast on mobile devices. socket.io will handle desktop notifications
         if (isMobileDevice()) {
           toast.success("Transfer completed successfully");
         }
@@ -118,7 +117,7 @@ const TransferPage = () => {
           </svg>
           Back to Dashboard
         </Link>
-        
+
         {/* Connection Status */}
         <ConnectionStatus />
       </div>
