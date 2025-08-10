@@ -27,22 +27,17 @@ const DashboardPage = () => {
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    // On component mount, fetch accounts and set default account
     const initializeAccounts = async () => {
       setIsInitializing(true);
 
       try {
-        // First fetch all accounts
         await fetchAccounts();
 
-        // Get accounts after fetching to ensure we have the latest state
         const currentAccounts = useAccountStore.getState().accounts;
 
-        // If no current account is set, get the default account
         if (!currentAccount) {
           const defaultAcc = await getDefaultAccount();
 
-          // If still no current account and we have accounts, use the first one
           if (!defaultAcc && currentAccounts.length > 0) {
             setCurrentAccount(currentAccounts[0]);
           }

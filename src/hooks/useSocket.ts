@@ -1,11 +1,16 @@
-// useSocket.ts
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { toast } from "react-toastify";
+
+interface MoneyTransferData {
+  from?: string;
+  to?: string;
+  amount: number;
+  videoCallUrl: string;
+}
 
 interface ServerToClientEvents {
-  "money-transfer": (data: { from: string; amount: number }) => void;
-  "money-sent": (data: { to: string; amount: number }) => void;
+  "money-transfer": (data: MoneyTransferData) => void;
+  "money-sent": (data: MoneyTransferData) => void;
 }
 
 type SocketType = Socket<ServerToClientEvents>;
@@ -20,11 +25,8 @@ const notifyListeners = (connected: boolean) => {
 export const connectSocket = (): SocketType | null => {
   if (globalSocket) {
     if (globalSocket.connected) {
-      console.log("Socket already connected, reusing existing connection");
       return globalSocket;
     } else {
-      // Socket exists but is disconnected, clean it up
-      console.log("Cleaning up disconnected socket before creating new one");
       globalSocket.disconnect();
       globalSocket.removeAllListeners();
       globalSocket = null;
@@ -32,15 +34,10 @@ export const connectSocket = (): SocketType | null => {
   }
 
   const token = localStorage.getItem("authToken");
-  if (!token) {
-    console.warn("No auth token found, cannot connect to socket server");
-    return null;
-  }
+  if (!token) return null;
 
   const socket: SocketType = io(import.meta.env.VITE_NODEJS_URL, {
-    auth: {
-      token,
-    },
+    auth: { token },
     autoConnect: true,
     reconnection: true,
     reconnectionAttempts: 5,
@@ -49,39 +46,12 @@ export const connectSocket = (): SocketType | null => {
 
   globalSocket = socket;
 
-  socket.on("connect", () => {
-    console.log("Socket connected:", socket.id);
-    notifyListeners(true);
-  });
-
-  socket.on("disconnect", (reason) => {
-    console.log("Socket disconnected:", reason);
-    notifyListeners(false);
-  });
-
-  // Handle money transfer events (receiving money)
-  socket.on("money-transfer", (data) => {
-    toast.success(`Received $${data.amount.toFixed(2)} from ${data.from}`, {
-      toastId: "transaction-toast",
-      position: "bottom-right",
-      autoClose: 5000,
-    });
-  });
-
-  // Handle money sent events (sending money)
-  socket.on("money-sent", (data) => {
-    // Show toast for outgoing money
-    toast.info(`Sent $${data.amount.toFixed(2)} to ${data.to}`, {
-      toastId: "transaction-toast",
-      position: "bottom-right",
-      autoClose: 5000,
-    });
-  });
+  socket.on("connect", () => notifyListeners(true));
+  socket.on("disconnect", () => notifyListeners(false));
 
   return socket;
 };
 
-// Global disconnect function
 export const disconnectSocket = () => {
   if (globalSocket) {
     globalSocket.disconnect();
@@ -90,33 +60,50 @@ export const disconnectSocket = () => {
   }
 };
 
-// Hook for components to use the global socket
 export function useSocket() {
-  const [connected, setConnected] = useState(() => {
-    return globalSocket?.connected || false;
-  });
+  const [connected, setConnected] = useState(globalSocket?.connected || false);
+  const [moneyTransferEvent, setMoneyTransferEvent] =
+    useState<MoneyTransferData | null>(null);
+  const [moneySentEvent, setMoneySentEvent] =
+    useState<MoneyTransferData | null>(null);
 
   useEffect(() => {
-    // Register this component as a listener for connection state changes
-    const listener = (isConnected: boolean) => {
-      setConnected(isConnected);
-    };
-
+    const listener = (isConnected: boolean) => setConnected(isConnected);
     listeners.push(listener);
-
-    // Set initial state
     setConnected(globalSocket?.connected || false);
-
-    // Clean up listener on unmount
     return () => {
       listeners = listeners.filter((l) => l !== listener);
     };
   }, []);
+
+  useEffect(() => {
+    if (!globalSocket) return;
+
+    const handleMoneyTransfer = (data: MoneyTransferData) => {
+      setMoneyTransferEvent(data);
+    };
+
+    const handleMoneySent = (data: MoneyTransferData) => {
+      setMoneySentEvent(data);
+    };
+
+    globalSocket.on("money-transfer", handleMoneyTransfer);
+    globalSocket.on("money-sent", handleMoneySent);
+
+    return () => {
+      globalSocket?.off("money-transfer", handleMoneyTransfer);
+      globalSocket?.off("money-sent", handleMoneySent);
+    };
+  }, [globalSocket]);
 
   return {
     socket: globalSocket,
     connected,
     connect: connectSocket,
     disconnect: disconnectSocket,
+    moneyTransferEvent,
+    moneySentEvent,
+    clearMoneyTransferEvent: () => setMoneyTransferEvent(null),
+    clearMoneySentEvent: () => setMoneySentEvent(null),
   };
 }

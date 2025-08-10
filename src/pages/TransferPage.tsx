@@ -72,7 +72,6 @@ const TransferPage = () => {
       if (result.success) {
         toast.success("Transfer completed successfully");
 
-        // Reset form
         setToAccountNumber("");
         setAmount("");
         setDescription("");
