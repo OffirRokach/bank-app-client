@@ -39,9 +39,9 @@ export function JitsiMeeting({ roomName, onClose }: JitsiMeetingProps) {
         if (onClose) onClose();
       });
       
-      apiRef.current.addListener("participantJoined", (participant: any) => {});
+      apiRef.current.addListener("participantJoined", () => {});
       
-      apiRef.current.addListener("error", (error: any) => {});
+      apiRef.current.addListener("error", () => {});
     } catch (error) {}
 
     return () => {
