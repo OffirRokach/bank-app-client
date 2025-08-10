@@ -10,6 +10,8 @@ export function MoneyTransferNotifications() {
     clearMoneyTransferEvent,
     clearMoneySentEvent,
     connect,
+    connected,
+    socket,
   } = useSocket();
 
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
@@ -19,35 +21,72 @@ export function MoneyTransferNotifications() {
   }, [connect]);
 
   useEffect(() => {
+  }, [connected, socket]);
+
+  useEffect(() => {
     if (moneyTransferEvent) {
+      // Create a custom toast with clickable link
       toast.success(
-        `Received $${moneyTransferEvent.amount.toFixed(2)} from ${
-          moneyTransferEvent.from
-        }`,
+        <div>
+          Received ${moneyTransferEvent.amount.toFixed(2)} from {moneyTransferEvent.from}
+          <br />
+          <a 
+            href={moneyTransferEvent.videoCallUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: '#0078ff', textDecoration: 'underline' }}
+            onClick={(e) => {
+              e.preventDefault();
+              const roomId = moneyTransferEvent.videoCallUrl.split("/").pop() || null;
+              setActiveRoom(roomId);
+            }}
+          >
+            Join Video Call
+          </a>
+        </div>,
         {
           toastId: `money-transfer-${moneyTransferEvent.from}-${moneyTransferEvent.amount}`,
           position: "bottom-right",
-          autoClose: 5000,
+          autoClose: 10000,
         }
       );
 
-      setActiveRoom(moneyTransferEvent.videoCallUrl.split("/").pop() || null);
+      const roomId = moneyTransferEvent.videoCallUrl.split("/").pop() || null;
+      setActiveRoom(roomId);
       clearMoneyTransferEvent();
     }
   }, [moneyTransferEvent, clearMoneyTransferEvent]);
 
   useEffect(() => {
     if (moneySentEvent) {
+      // Create a custom toast with clickable link
       toast.info(
-        `Sent $${moneySentEvent.amount.toFixed(2)} to ${moneySentEvent.to}`,
+        <div>
+          Sent ${moneySentEvent.amount.toFixed(2)} to {moneySentEvent.to}
+          <br />
+          <a 
+            href={moneySentEvent.videoCallUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: '#0078ff', textDecoration: 'underline' }}
+            onClick={(e) => {
+              e.preventDefault();
+              const roomId = moneySentEvent.videoCallUrl.split("/").pop() || null;
+              setActiveRoom(roomId);
+            }}
+          >
+            Join Video Call
+          </a>
+        </div>,
         {
           toastId: `money-sent-${moneySentEvent.to}-${moneySentEvent.amount}`,
           position: "bottom-right",
-          autoClose: 5000,
+          autoClose: 10000,
         }
       );
 
-      setActiveRoom(moneySentEvent.videoCallUrl.split("/").pop() || null);
+      const roomId = moneySentEvent.videoCallUrl.split("/").pop() || null;
+      setActiveRoom(roomId);
       clearMoneySentEvent();
     }
   }, [moneySentEvent, clearMoneySentEvent]);
@@ -59,7 +98,9 @@ export function MoneyTransferNotifications() {
           <h3>Video call for transaction</h3>
           <JitsiMeeting
             roomName={activeRoom}
-            onClose={() => setActiveRoom(null)}
+            onClose={() => {
+              setActiveRoom(null);
+            }}
           />
         </div>
       )}

@@ -34,7 +34,9 @@ export const connectSocket = (): SocketType | null => {
   }
 
   const token = localStorage.getItem("authToken");
-  if (!token) return null;
+  if (!token) {
+    return null;
+  }
 
   const socket: SocketType = io(import.meta.env.VITE_NODEJS_URL, {
     auth: { token },
@@ -46,8 +48,15 @@ export const connectSocket = (): SocketType | null => {
 
   globalSocket = socket;
 
-  socket.on("connect", () => notifyListeners(true));
-  socket.on("disconnect", () => notifyListeners(false));
+  socket.on("connect", () => {
+    notifyListeners(true);
+  });
+
+  socket.on("disconnect", () => {
+    notifyListeners(false);
+  });
+
+  socket.on("connect_error", () => {});
 
   return socket;
 };
@@ -77,7 +86,9 @@ export function useSocket() {
   }, []);
 
   useEffect(() => {
-    if (!globalSocket) return;
+    if (!globalSocket) {
+      return;
+    }
 
     const handleMoneyTransfer = (data: MoneyTransferData) => {
       setMoneyTransferEvent(data);

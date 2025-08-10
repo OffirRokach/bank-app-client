@@ -70,8 +70,6 @@ const TransferPage = () => {
       );
 
       if (result.success) {
-        toast.success("Transfer completed successfully");
-
         setToAccountNumber("");
         setAmount("");
         setDescription("");

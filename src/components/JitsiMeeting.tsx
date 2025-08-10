@@ -17,7 +17,6 @@ export function JitsiMeeting({ roomName, onClose }: JitsiMeetingProps) {
 
   useEffect(() => {
     if (!window.JitsiMeetExternalAPI) {
-      console.error("Jitsi Meet API script not loaded");
       return;
     }
 
@@ -31,15 +30,25 @@ export function JitsiMeeting({ roomName, onClose }: JitsiMeetingProps) {
       interfaceConfigOverwrite: {},
     };
 
-    apiRef.current = new window.JitsiMeetExternalAPI(domain, options);
-
-    apiRef.current.addListener("readyToClose", () => {
-      if (onClose) onClose();
-    });
+    try {
+      apiRef.current = new window.JitsiMeetExternalAPI(domain, options);
+      
+      apiRef.current.addListener("videoConferenceJoined", () => {});
+      
+      apiRef.current.addListener("readyToClose", () => {
+        if (onClose) onClose();
+      });
+      
+      apiRef.current.addListener("participantJoined", (participant: any) => {});
+      
+      apiRef.current.addListener("error", (error: any) => {});
+    } catch (error) {}
 
     return () => {
-      apiRef.current?.dispose();
-      apiRef.current = null;
+      if (apiRef.current) {
+        apiRef.current.dispose();
+        apiRef.current = null;
+      }
     };
   }, [roomName, onClose]);
 
