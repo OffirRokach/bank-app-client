@@ -20,7 +20,8 @@ export const useAuth = () => {
     if (token) {
       try {
         return jwtDecode<JwtPayload>(token).firstName;
-      } catch (err) {
+      } catch (error: unknown) {
+        console.error(error);
         return null;
       }
     }

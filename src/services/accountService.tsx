@@ -23,7 +23,7 @@ export const getAccountsAPI = async (suppressToast = false) => {
     );
 
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleError(error, {
       showToast: !suppressToast,
       customMessage: "Failed to fetch accounts",
@@ -81,7 +81,7 @@ export const createAccountAPI = async (suppressToast = false) => {
     );
 
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleError(error, {
       showToast: !suppressToast,
       customMessage: "Failed to create account",
@@ -114,7 +114,7 @@ export const setDefaultAccountAPI = async (
     );
 
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleError(error, {
       showToast: !suppressToast,
       customMessage: "Failed to update default account",

@@ -10,8 +10,6 @@ export function MoneyTransferNotifications() {
     clearMoneyTransferEvent,
     clearMoneySentEvent,
     connect,
-    connected,
-    socket,
   } = useSocket();
 
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
@@ -21,23 +19,22 @@ export function MoneyTransferNotifications() {
   }, [connect]);
 
   useEffect(() => {
-  }, [connected, socket]);
-
-  useEffect(() => {
     if (moneyTransferEvent) {
       // Create a custom toast with clickable link
       toast.success(
         <div>
-          Received ${moneyTransferEvent.amount.toFixed(2)} from {moneyTransferEvent.from}
+          Received ${moneyTransferEvent.amount.toFixed(2)} from{" "}
+          {moneyTransferEvent.from}
           <br />
-          <a 
-            href={moneyTransferEvent.videoCallUrl} 
-            target="_blank" 
+          <a
+            href={moneyTransferEvent.videoCallUrl}
+            target="_blank"
             rel="noopener noreferrer"
-            style={{ color: '#0078ff', textDecoration: 'underline' }}
+            style={{ color: "#0078ff", textDecoration: "underline" }}
             onClick={(e) => {
               e.preventDefault();
-              const roomId = moneyTransferEvent.videoCallUrl.split("/").pop() || null;
+              const roomId =
+                moneyTransferEvent.videoCallUrl.split("/").pop() || null;
               setActiveRoom(roomId);
             }}
           >
@@ -64,14 +61,15 @@ export function MoneyTransferNotifications() {
         <div>
           Sent ${moneySentEvent.amount.toFixed(2)} to {moneySentEvent.to}
           <br />
-          <a 
-            href={moneySentEvent.videoCallUrl} 
-            target="_blank" 
+          <a
+            href={moneySentEvent.videoCallUrl}
+            target="_blank"
             rel="noopener noreferrer"
-            style={{ color: '#0078ff', textDecoration: 'underline' }}
+            style={{ color: "#0078ff", textDecoration: "underline" }}
             onClick={(e) => {
               e.preventDefault();
-              const roomId = moneySentEvent.videoCallUrl.split("/").pop() || null;
+              const roomId =
+                moneySentEvent.videoCallUrl.split("/").pop() || null;
               setActiveRoom(roomId);
             }}
           >

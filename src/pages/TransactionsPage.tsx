@@ -131,6 +131,7 @@ const TransactionsPage = () => {
         return "Transfer";
       }
     } catch (error) {
+      console.error(error);
       return "Unknown";
     }
   };
@@ -157,7 +158,7 @@ const TransactionsPage = () => {
           </svg>
           Back to Dashboard
         </Link>
-        
+
         {/* Connection Status */}
         <ConnectionStatus />
       </div>

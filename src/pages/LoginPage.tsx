@@ -66,7 +66,7 @@ const LoginPage = () => {
     }
 
     // Log the API URL from environment variables
-    console.log('API URL from env:', import.meta.env.VITE_NODEJS_URL);
+    console.log("API URL from env:", import.meta.env.VITE_NODEJS_URL);
 
     setIsSubmitting(true);
 
@@ -102,10 +102,10 @@ const LoginPage = () => {
           response.message || "Login failed. Please check your credentials."
         );
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error(error);
       // Handle unexpected errors
       toast.error("An unexpected error occurred. Please try again later.");
-
     } finally {
       setIsSubmitting(false);
     }

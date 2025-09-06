@@ -105,7 +105,7 @@ export function useSocket() {
       globalSocket?.off("money-transfer", handleMoneyTransfer);
       globalSocket?.off("money-sent", handleMoneySent);
     };
-  }, [globalSocket]);
+  }, []);
 
   return {
     socket: globalSocket,

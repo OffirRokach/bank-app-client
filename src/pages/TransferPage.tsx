@@ -82,7 +82,8 @@ const TransferPage = () => {
         toast.error(result.message || "Failed to complete transfer");
       }
     } catch (error: any) {
-      toast.error(error.message || "Failed to complete transfer");
+      console.error(error);
+      toast.error(error?.message || "Failed to complete transfer");
     } finally {
       setIsSubmitting(false);
     }

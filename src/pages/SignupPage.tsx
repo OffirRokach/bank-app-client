@@ -144,7 +144,8 @@ const SignupPage = () => {
             response?.message || "Failed to create account. Please try again.",
         });
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error(error);
       setSubmitResult({
         success: false,
         message: "An unexpected error occurred. Please try again later.",

@@ -32,17 +32,19 @@ export function JitsiMeeting({ roomName, onClose }: JitsiMeetingProps) {
 
     try {
       apiRef.current = new window.JitsiMeetExternalAPI(domain, options);
-      
+
       apiRef.current.addListener("videoConferenceJoined", () => {});
-      
+
       apiRef.current.addListener("readyToClose", () => {
         if (onClose) onClose();
       });
-      
+
       apiRef.current.addListener("participantJoined", () => {});
-      
+
       apiRef.current.addListener("error", () => {});
-    } catch (error) {}
+    } catch (error: unknown) {
+      console.error(error);
+    }
 
     return () => {
       if (apiRef.current) {

@@ -33,15 +33,15 @@ interface AccountState {
 // Helper function to save current account ID to local storage
 const saveCurrentAccountId = (accountId: string | null) => {
   if (accountId) {
-    localStorage.setItem('currentAccountId', accountId);
+    localStorage.setItem("currentAccountId", accountId);
   } else {
-    localStorage.removeItem('currentAccountId');
+    localStorage.removeItem("currentAccountId");
   }
 };
 
 // Helper function to get saved account ID from local storage
 const getSavedAccountId = (): string | null => {
-  return localStorage.getItem('currentAccountId');
+  return localStorage.getItem("currentAccountId");
 };
 
 export const useAccountStore = create<AccountState>((set, get) => ({
@@ -65,7 +65,8 @@ export const useAccountStore = create<AccountState>((set, get) => ({
       } else {
         set({ error: response?.message || "Failed to fetch accounts" });
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      console.error(err);
       set({ error: "An unexpected error occurred" });
     } finally {
       set({ isLoading: false });
@@ -85,18 +86,20 @@ export const useAccountStore = create<AccountState>((set, get) => ({
       ) {
         const accounts = response.data;
         let selectedAccount = null;
-        
+
         // First, check if we have a saved account ID in local storage
         const savedAccountId = getSavedAccountId();
-        
+
         if (savedAccountId) {
           // Try to find the saved account in the fetched accounts
-          selectedAccount = accounts.find(account => account.id === savedAccountId);
+          selectedAccount = accounts.find(
+            (account) => account.id === savedAccountId
+          );
         }
-        
+
         // If no saved account was found, fall back to the default account
         if (!selectedAccount) {
-          selectedAccount = accounts.find(account => account.isDefault);
+          selectedAccount = accounts.find((account) => account.isDefault);
         }
 
         if (selectedAccount) {
@@ -117,7 +120,8 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         set({ error: response?.message || "Failed to fetch accounts" });
         return null;
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      console.error(err);
       // Set error but don't display toast during page load
       set({ error: "An unexpected error occurred" });
       return null;
@@ -151,7 +155,8 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         toast.error(response?.message || "Failed to create account");
         return null;
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      console.error(err);
       toast.error("An unexpected error occurred");
 
       return null;
@@ -184,10 +189,12 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         toast.success("Default account updated");
         return true;
       } else {
+        console.error(response?.message || "Failed to update default account");
         toast.error(response?.message || "Failed to update default account");
         return false;
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      console.error(err);
       toast.error("An unexpected error occurred");
 
       return false;
@@ -217,10 +224,12 @@ export const useAccountStore = create<AccountState>((set, get) => ({
 
         return account;
       } else {
+        console.error(response?.message || "Failed to fetch account");
         toast.error(response?.message || "Failed to fetch account");
         return null;
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      console.error(err);
       toast.error("An unexpected error occurred");
 
       return null;

@@ -31,11 +31,11 @@ export interface LoginResponse {
   defaultAccount: AccountResponse | null;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data?: T;
-  error?: any;
+  error?: unknown;
 }
 
 export interface UserProfile {
