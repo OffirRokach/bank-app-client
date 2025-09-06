@@ -38,15 +38,11 @@ export const useAuth = () => {
   }, [token]);
 
   const login = async (authToken: AccessToken) => {
-    // Set token first
     setToken(authToken);
     localStorage.setItem("authToken", authToken);
 
     try {
       const defaultAccount = await getDefaultAccount();
-      if (!defaultAccount) {
-        // Handle case when no default account is found
-      }
       setCurrentAccount(defaultAccount);
     } catch (error) {
       handleError(error, {
@@ -61,7 +57,7 @@ export const useAuth = () => {
     setCurrentAccount(null);
     setToken(null);
     localStorage.removeItem("authToken");
-    localStorage.removeItem("currentAccountId"); // Also clear the saved account ID
+    localStorage.removeItem("currentAccountId");
     navigate("/login");
   };
 

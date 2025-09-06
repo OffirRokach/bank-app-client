@@ -58,7 +58,6 @@ const ProfilePage = () => {
 
   // Handle input change
   const handleInputChange = (field: string, value: string) => {
-    // Update form values without causing re-render that loses focus
     setFormValues((prev) => ({
       ...prev,
       [field]: value,

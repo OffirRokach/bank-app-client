@@ -42,13 +42,11 @@ const TransactionsPage = () => {
     "all" | "received" | "sent"
   >("all");
 
-  // Define getTransactionType before using it in filteredTransactions
   const getTransactionType = (
     transaction: TransactionResponse
   ): "received" | "sent" | "unknown" => {
     if (!currentAccount) return "unknown";
 
-    // Safety check for transaction properties
     if (
       !transaction ||
       !transaction.fromAccountId ||
@@ -57,21 +55,15 @@ const TransactionsPage = () => {
       return "unknown";
     }
 
-    // If money is going out from this account
     if (transaction.fromAccountId === currentAccount.id) {
       return "sent"; // Money going out
-    }
-    // If money is coming into this account
-    else if (transaction.toAccountId === currentAccount.id) {
+    } else if (transaction.toAccountId === currentAccount.id) {
       return "received"; // Money coming in
-    }
-    // Any other case (should be rare)
-    else {
+    } else {
       return "unknown";
     }
   };
 
-  // Filtered transactions based on the selected filter
   const filteredTransactions = transactions
     ? transactions.filter((transaction) => {
         if (transactionFilter === "all") {
@@ -92,8 +84,6 @@ const TransactionsPage = () => {
       })
     : [];
 
-  // getTransactionDescription function removed as it's no longer needed
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat("en-US", {
@@ -112,7 +102,6 @@ const TransactionsPage = () => {
 
     try {
       if (type === "received") {
-        // For deposits, show the sender's name
         const firstName = transaction.fromAccount?.user?.firstName || "";
 
         const lastName = transaction.fromAccount?.user?.lastName || "";
@@ -121,7 +110,6 @@ const TransactionsPage = () => {
           ? `${firstName} ${lastName}`
           : "Unknown Sender";
       } else if (type === "sent") {
-        // For withdrawals, show the recipient's name
         const firstName = transaction.toAccount?.user?.firstName || "";
         const lastName = transaction.toAccount?.user?.lastName || "";
         return firstName && lastName

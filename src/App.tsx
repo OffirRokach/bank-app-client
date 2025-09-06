@@ -31,7 +31,7 @@ function App() {
             <Route path="/transfer" element={<TransferPage />} />
           </Route>
 
-          {/* Redirect any unknown routes to dashboard if authenticated, or landing page if not */}
+          {/* Redirects any unknown routes to dashboard if authenticated, or landing page if not */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
