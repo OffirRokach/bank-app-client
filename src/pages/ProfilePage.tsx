@@ -4,7 +4,7 @@ import { useProfile } from "../hooks/useProfile";
 import { toast } from "react-toastify";
 import { useState, useEffect, useRef } from "react";
 import type { UserUpdatableFields } from "../types";
-import { Input } from "../components/ui/inputBox";
+import { Input } from "../components/ui/InputBox";
 import { ConnectionStatus } from "../components/ConnectionStatus";
 
 const ProfilePage = () => {

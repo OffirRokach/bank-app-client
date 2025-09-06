@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import type { SignupFormData } from "../types";
 import { signupAPI } from "../services/authService";
-import { Calendar } from "../components/ui/calendar";
+import { Calendar } from "../components/ui/Calendar";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 

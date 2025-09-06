@@ -9,7 +9,7 @@ import ProfilePage from "./pages/ProfilePage";
 import TransactionsPage from "./pages/TransactionsPage";
 import TransferPage from "./pages/TransferPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
-import ProtectedRoute from "./components/core/protectedRoute";
+import ProtectedRoute from "./components/core/ProtectedRoute";
 import { MoneyTransferNotifications } from "./components/MoneyTransferNotify";
 
 function App() {
