@@ -5,6 +5,7 @@ import { createTransactionAPI } from "../services/TransactionService";
 import { useAuth } from "../hooks/useAuth";
 import { useAccountStore } from "../store/accountStore";
 import { ConnectionStatus } from "../components/ConnectionStatus";
+import { useSocket } from "../hooks/useSocket";
 
 const TransferPage = () => {
   const navigate = useNavigate();
@@ -19,6 +20,13 @@ const TransferPage = () => {
   const { logout } = useAuth();
   const { currentAccount, getAccountById, getDefaultAccount } =
     useAccountStore();
+  const { connect } = useSocket(); // Get socket connection function
+
+  // Connect socket when component mounts
+  useEffect(() => {
+    console.log("[TransferPage] Connecting socket");
+    connect();
+  }, [connect]);
 
   // Handle page refresh - ensure we have account data
   useEffect(() => {

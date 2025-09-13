@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
+import { toast } from "react-toastify";
 
 interface MoneyTransferData {
   from?: string;
@@ -15,7 +16,7 @@ interface ServerToClientEvents {
 }
 
 // For debugging - log only specific events
-const DEBUG_SOCKET = false;
+const DEBUG_SOCKET = true;
 
 type SocketType = Socket<ServerToClientEvents>;
 
@@ -89,12 +90,14 @@ export const connectSocket = (): SocketType | null => {
 
 export const disconnectSocket = () => {
   if (globalSocket) {
-    if (DEBUG_SOCKET) console.log("[disconnectSocket] Disconnecting socket");
     globalSocket.disconnect();
     globalSocket = null;
     notifyListeners(false);
   }
 };
+
+// Track if event handlers are registered to prevent duplicate registrations
+let handlersRegistered = false;
 
 export function useSocket() {
   const [connected, setConnected] = useState(globalSocket?.connected || false);
@@ -102,6 +105,9 @@ export function useSocket() {
     useState<MoneyTransferData | null>(null);
   const [moneySentEvent, setMoneySentEvent] =
     useState<MoneyTransferData | null>(null);
+
+  // Use a ref to track if this instance has registered handlers
+  const hasRegisteredHandlers = useRef(false);
 
   useEffect(() => {
     const listener = (isConnected: boolean) => setConnected(isConnected);
@@ -117,37 +123,105 @@ export function useSocket() {
       return;
     }
 
+    // Only register handlers once per socket instance
+    if (handlersRegistered) {
+      return;
+    }
+
+    // Helper function to show money transfer toast
+    const showMoneyTransferToast = (data: MoneyTransferData) => {
+      try {
+        const message = `Received $${data.amount.toFixed(2)} from ${
+          data.from || "unknown"
+        }\nClick to join video call`;
+
+        toast.success(message, {
+          toastId: `money-transfer-${data.from}-${data.amount}`,
+          position: "bottom-right",
+          autoClose: 10000,
+          onClick: () => {
+            // Open video call URL in new tab
+            window.open(data.videoCallUrl, "_blank");
+          },
+        });
+
+        console.log("[useSocket] Toast for money transfer shown successfully");
+      } catch (error) {
+        console.error(
+          "[useSocket] Error showing toast for money transfer:",
+          error
+        );
+      }
+    };
+
+    // Helper function to show money sent toast
+    const showMoneySentToast = (data: MoneyTransferData) => {
+      try {
+        const message = `Sent $${data.amount.toFixed(2)} to ${
+          data.to || "unknown"
+        }\nClick to join video call`;
+
+        toast.success(message, {
+          toastId: `money-sent-${data.to}-${data.amount}`,
+          position: "bottom-right",
+          autoClose: 10000,
+          onClick: () => {
+            // Open video call URL in new tab
+            window.open(data.videoCallUrl, "_blank");
+          },
+        });
+      } catch (error) {
+        console.error("[useSocket] Error showing toast for money sent:", error);
+      }
+    };
+
     const handleMoneyTransfer = (data: MoneyTransferData) => {
+      console.log(
+        "[useSocket] Money transfer event received, updating state:",
+        data
+      );
       setMoneyTransferEvent(data);
+      showMoneyTransferToast(data);
     };
 
     const handleMoneySent = (data: MoneyTransferData) => {
+      console.log(
+        "[useSocket] Money sent event received, updating state:",
+        data
+      );
       setMoneySentEvent(data);
+      showMoneySentToast(data);
     };
 
     // Add a debug handler for all events
     const debugHandler = (eventName: string, ...args: any[]) => {
-      if (DEBUG_SOCKET)
-        console.log(`[useSocket] Socket event received: ${eventName}`, args);
+      console.log(`[useSocket] Socket event received: ${eventName}`, args);
     };
 
-    if (DEBUG_SOCKET) console.log("[useSocket] Registering event handlers");
     globalSocket.on("money-transfer", handleMoneyTransfer);
     globalSocket.on("money-sent", handleMoneySent);
 
-    // @ts-ignore - Using internal socket.io method for debugging
+    // Mark handlers as registered
+    handlersRegistered = true;
+    hasRegisteredHandlers.current = true;
+
+    // Listen for all events to debug
     if (typeof globalSocket.onAny === "function") {
       globalSocket.onAny(debugHandler);
     }
 
     return () => {
-      if (DEBUG_SOCKET) console.log("[useSocket] Cleaning up event handlers");
-      globalSocket?.off("money-transfer", handleMoneyTransfer);
-      globalSocket?.off("money-sent", handleMoneySent);
+      // Only clean up if this instance registered the handlers
+      if (hasRegisteredHandlers.current) {
+        globalSocket?.off("money-transfer", handleMoneyTransfer);
+        globalSocket?.off("money-sent", handleMoneySent);
 
-      // @ts-ignore - Using internal socket.io method for debugging
-      if (typeof globalSocket?.offAny === "function") {
-        globalSocket.offAny(debugHandler);
+        if (typeof globalSocket?.offAny === "function") {
+          globalSocket.offAny(debugHandler);
+        }
+
+        // Reset the registration flag when component unmounts
+        handlersRegistered = false;
       }
     };
   }, []);
@@ -161,5 +235,8 @@ export function useSocket() {
     moneySentEvent,
     clearMoneyTransferEvent: () => setMoneyTransferEvent(null),
     clearMoneySentEvent: () => setMoneySentEvent(null),
+    // Expose state setters for testing
+    setMoneyTransferEvent,
+    setMoneySentEvent,
   };
 }

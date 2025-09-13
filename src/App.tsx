@@ -10,7 +10,6 @@ import TransactionsPage from "./pages/TransactionsPage";
 import TransferPage from "./pages/TransferPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import ProtectedRoute from "./components/core/ProtectedRoute";
-import { MoneyTransferNotifications } from "./components/MoneyTransferNotify";
 
 function App() {
   return (
@@ -35,7 +34,6 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
-      <MoneyTransferNotifications />
       <ToastContainer />
     </>
   );
