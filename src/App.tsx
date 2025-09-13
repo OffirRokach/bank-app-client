@@ -35,8 +35,8 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
-      <ToastContainer />
       <MoneyTransferNotifications />
+      <ToastContainer />
     </>
   );
 }

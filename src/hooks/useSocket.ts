@@ -122,7 +122,6 @@ export function useSocket() {
     };
 
     const handleMoneySent = (data: MoneyTransferData) => {
-      console.log("Received money-sent event:", data);
       setMoneySentEvent(data);
     };
 

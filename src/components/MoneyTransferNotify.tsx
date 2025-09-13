@@ -57,7 +57,7 @@ export function MoneyTransferNotifications() {
   useEffect(() => {
     if (moneySentEvent) {
       // Create a custom toast with clickable link
-      toast.info(
+      toast.success(
         <div>
           Sent ${moneySentEvent.amount.toFixed(2)} to {moneySentEvent.to}
           <br />
