@@ -30,15 +30,6 @@ interface AccountState {
   getAccountById: (accountId: string) => Promise<AccountResponse | null>;
 }
 
-// Helper function to save current account ID to local storage
-const saveCurrentAccountId = (accountId: string | null) => {
-  if (accountId) {
-    localStorage.setItem("currentAccountId", accountId);
-  } else {
-    localStorage.removeItem("currentAccountId");
-  }
-};
-
 // Helper function to get saved account ID from local storage
 const getSavedAccountId = (): string | null => {
   return localStorage.getItem("currentAccountId");
@@ -54,7 +45,6 @@ export const useAccountStore = create<AccountState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      // Use suppressToast to prevent error toast during logout
       const response = await getAccountsAPI(true);
 
       if (
@@ -133,7 +123,12 @@ export const useAccountStore = create<AccountState>((set, get) => ({
   setCurrentAccount: (account) => {
     set({ currentAccount: account });
     // Save account ID to local storage when setting current account
-    saveCurrentAccountId(account?.id || null);
+    // Make sure to handle null accounts properly
+    if (account === null) {
+      localStorage.removeItem("currentAccountId");
+    } else {
+      localStorage.setItem("currentAccountId", account.id);
+    }
   },
 
   createAccount: async () => {

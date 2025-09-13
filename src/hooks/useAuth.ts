@@ -54,10 +54,9 @@ export const useAuth = () => {
 
   const logout = () => {
     disconnectSocket();
-    setCurrentAccount(null);
     setToken(null);
     localStorage.removeItem("authToken");
-    localStorage.removeItem("currentAccountId");
+    setCurrentAccount(null);
     navigate("/login");
   };
 
