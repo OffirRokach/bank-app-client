@@ -44,7 +44,7 @@ const DashboardPage = () => {
     };
 
     initializeAccounts();
-  }, [fetchAccounts, getDefaultAccount, setCurrentAccount]);
+  }, [accounts, fetchAccounts, getDefaultAccount, setCurrentAccount]);
 
   const handleSwitchAccount = (selectedAccount: AccountResponse) => {
     setCurrentAccount(selectedAccount);
