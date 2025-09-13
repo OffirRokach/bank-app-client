@@ -67,7 +67,6 @@ export const useAccountStore = create<AccountState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      // Always use suppressToast to prevent error toast during page load/refresh
       const response = await getAccountsAPI(true);
 
       if (
@@ -77,36 +76,30 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         const accounts = response.data;
         let selectedAccount = null;
 
-        // First, check if we have a saved account ID in local storage
         const savedAccountId = getSavedAccountId();
 
         if (savedAccountId) {
-          // Try to find the saved account in the fetched accounts
           selectedAccount = accounts.find(
             (account) => account.id === savedAccountId
           );
         }
-
-        // If no saved account was found, fall back to the default account
         if (!selectedAccount) {
           selectedAccount = accounts.find((account) => account.isDefault);
         }
 
         if (selectedAccount) {
-          // Update the accounts state with the fetched accounts and selected account
           set({
             accounts: accounts,
             currentAccount: selectedAccount,
-            error: null, // Clear any previous errors
+            error: null,
           });
           return selectedAccount;
         } else {
-          // Set error but don't display toast
           set({ error: "No account found" });
           return null;
         }
       } else {
-        // Set error message but don't display toast
+        set({ error: response?.message || "Failed to fetch accounts" });
         set({ error: response?.message || "Failed to fetch accounts" });
         return null;
       }
@@ -121,7 +114,7 @@ export const useAccountStore = create<AccountState>((set, get) => ({
   },
 
   setCurrentAccount: (account) => {
-    // console.log("setCurrentAccount", account);
+    console.log("setCurrentAccount", account);
 
     set({ currentAccount: account });
     if (account === null) {
