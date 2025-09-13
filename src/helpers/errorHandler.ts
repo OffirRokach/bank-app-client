@@ -32,8 +32,6 @@ export const handleError = <T = any>(
     if (response?.status === 401 && redirectOnAuth) {
       if (showToast) toast.warning("Unauthorized. Please log in again.");
       localStorage.removeItem("authToken");
-      localStorage.removeItem("currentAccountId");
-      console.log("Error handler: removed authToken and currentAccountId due to 401 error");
       window.location.href = "/login";
       return {
         success: false,
@@ -68,7 +66,6 @@ export const handleError = <T = any>(
   }
 
   // Log error for debugging
-
 
   return {
     success: false,

@@ -1,10 +1,10 @@
 // @ts-check
-import { defineConfig, devices } from '@playwright/test';
+const { defineConfig, devices } = require('@playwright/test');
 
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
-export default defineConfig({
+module.exports = defineConfig({
   testDir: './tests',
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,

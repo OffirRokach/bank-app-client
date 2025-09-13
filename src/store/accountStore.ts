@@ -114,8 +114,6 @@ export const useAccountStore = create<AccountState>((set, get) => ({
   },
 
   setCurrentAccount: (account) => {
-    console.log("setCurrentAccount", account);
-
     set({ currentAccount: account });
     if (account === null) {
       localStorage.removeItem("currentAccountId");

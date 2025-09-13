@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect } from '@playwright/test';
+const { test, expect } = require('@playwright/test');
 
 test.describe('Authentication Flow', () => {
   test('Login and logout functionality', async ({ page }) => {
