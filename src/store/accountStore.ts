@@ -121,9 +121,9 @@ export const useAccountStore = create<AccountState>((set, get) => ({
   },
 
   setCurrentAccount: (account) => {
+    // console.log("setCurrentAccount", account);
+
     set({ currentAccount: account });
-    // Save account ID to local storage when setting current account
-    // Make sure to handle null accounts properly
     if (account === null) {
       localStorage.removeItem("currentAccountId");
     } else {

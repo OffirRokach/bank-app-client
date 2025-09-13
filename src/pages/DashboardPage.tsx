@@ -12,12 +12,12 @@ const DashboardPage = () => {
 
   const {
     accounts,
-    currentAccount,
     fetchAccounts,
     createAccount,
-    setDefaultAccount,
+    currentAccount,
     setCurrentAccount,
     getDefaultAccount,
+    setDefaultAccount,
   } = useAccountStore();
 
   const [showAccountsDropdown, setShowAccountsDropdown] = useState(false);
@@ -33,14 +33,10 @@ const DashboardPage = () => {
       try {
         await fetchAccounts();
 
-        const currentAccounts = useAccountStore.getState().accounts;
+        const defaultAcc = await getDefaultAccount();
 
-        if (!currentAccount) {
-          const defaultAcc = await getDefaultAccount();
-
-          if (!defaultAcc && currentAccounts.length > 0) {
-            setCurrentAccount(currentAccounts[0]);
-          }
+        if (!defaultAcc && accounts.length > 0) {
+          setCurrentAccount(accounts[0]);
         }
       } finally {
         setIsInitializing(false);
@@ -48,7 +44,7 @@ const DashboardPage = () => {
     };
 
     initializeAccounts();
-  }, [currentAccount, fetchAccounts, getDefaultAccount, setCurrentAccount]);
+  }, [fetchAccounts, getDefaultAccount, setCurrentAccount]);
 
   const handleSwitchAccount = (selectedAccount: AccountResponse) => {
     setCurrentAccount(selectedAccount);
