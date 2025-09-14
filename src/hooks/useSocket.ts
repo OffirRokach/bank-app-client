@@ -15,9 +15,6 @@ interface ServerToClientEvents {
   "money-sent": (data: MoneyTransferData) => void;
 }
 
-// For debugging - log only specific events
-const DEBUG_SOCKET = true;
-
 type SocketType = Socket<ServerToClientEvents>;
 
 let globalSocket: SocketType | null = null;
